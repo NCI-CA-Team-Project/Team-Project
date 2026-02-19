@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lingo MVP Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; }
+        input { display: block; margin: 6px 0 12px; padding: 8px; width: 320px; }
+        button { margin-right: 8px; padding: 8px 12px; }
+        pre { background: #f6f6f6; padding: 12px; overflow: auto; }
+        .row { display: flex; gap: 48px; }
+        .card { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<h1>AuthController Test Page</h1>
+
+<div class="row">
+    <div class="card">
+        <h2>Register</h2>
+        <input id="rUserName" placeholder="userName" />
+        <input id="rEmail" placeholder="email" />
+        <input id="rPassword" placeholder="password" type="password" />
+        <input id="rFirstName" placeholder="firstName" />
+        <input id="rLastName" placeholder="lastName" />
+        <input id="rBirthday" placeholder="birthday (YYYY-MM-DD)" />
+        <button onclick="register()">Register</button>
+    </div>
+
+    <div class="card">
+        <h2>Login</h2>
+        <input id="lUserName" placeholder="userName" />
+        <input id="lPassword" placeholder="password" type="password" />
+        <button onclick="login()">Login</button>
+        <button onclick="me()">Me</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<h2>Result</h2>
+<pre id="out"></pre>
+
+<script>
+    const out = document.getElementById("out");
+    function show(label, data) {
+        out.textContent = label + "\n\n" + (typeof data === "string" ? data : JSON.stringify(data, null, 2));
+    }
+
+    async function register() {
+        const body = {
+            userName: document.getElementById("rUserName").value,
+            email: document.getElementById("rEmail").value,
+            password: document.getElementById("rPassword").value,
+            firstName: document.getElementById("rFirstName").value,
+            lastName: document.getElementById("rLastName").value,
+            birthday: document.getElementById("rBirthday").value
+        };
+
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(body)
+        });
+
+        const text = await res.text();
+        show("REGISTER " + res.status, text);
+    }
+
+    async function login() {
+        const body = {
+            userName: document.getElementById("lUserName").value,
+            password: document.getElementById("lPassword").value
+        };
+
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(body)
+        });
+
+        const text = await res.text();
+        show("LOGIN " + res.status, text);
+    }
+
+    async function me() {
+        const res = await fetch("/api/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        const text = await res.text();
+        show("ME " + res.status, text);
+    }
+
+    async function logout() {
+        const res = await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+
+        show("LOGOUT " + res.status, "Done");
+    }
+</script>
+
+</body>
+</html>
