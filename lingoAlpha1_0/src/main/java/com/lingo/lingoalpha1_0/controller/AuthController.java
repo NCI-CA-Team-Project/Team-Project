@@ -4,25 +4,38 @@ import com.lingo.lingoalpha1_0.entity.User;
 import com.lingo.lingoalpha1_0.dto.LoginRequestDTO;
 import com.lingo.lingoalpha1_0.dto.RegisterRequestDTO;
 import com.lingo.lingoalpha1_0.dto.UserResponseDTO;
+import com.lingo.lingoalpha1_0.repository.UserRepository;
 import com.lingo.lingoalpha1_0.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/auth") // this is to prefix these to each of our paths
 public class AuthController {
     //declaring auth service, private so it can only be referenced once
     private final AuthService authService;
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
 
-    //this is to declare our session user id which we will add a cookie id for the browser to store and remember the user is logged in
-    private static final String SESSION_USER_ID = "SESSION_USER_ID";
     //constructor
-    public AuthController(AuthService authService){
+    public AuthController(AuthService authService, UserRepository userRepository, AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository){
         this.authService = authService;
+        this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
     /*
@@ -49,14 +62,21 @@ public class AuthController {
     this is our login end point, we use our authService.login method
     and then also establish the session for the user to stay logged in
      */
-    @PostMapping("/login")
-    public ResponseEntity <UserResponseDTO> login(@RequestBody LoginRequestDTO req, HttpSession session){
-        //verifying the user name and password
-        User authUser = authService.authenticate(req.userName(), req.password());
-        //this is where we store the session id for the users browser to store a cookie based on this
-        session.setAttribute(SESSION_USER_ID, authUser.getId());
-        //we return a http status to clarify its ok
-        return ResponseEntity.ok(toResponse(authUser));
+    @PostMapping("/signin")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.userName(), request.password());
+
+        Authentication authentication =
+                authenticationManager.authenticate(token);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        httpRequest.getSession(true);
+
+        return ResponseEntity.ok("Login successful");
+    }
+        return ResponseEntity.ok("Logged in successfully");
+
     }
 
     /*
@@ -72,18 +92,15 @@ public class AuthController {
     This is to use when logged in to check the user profile, can add languages and interests in future builds
      */
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> me(HttpSession session){
-        Object idObject = session.getAttribute(SESSION_USER_ID);
-        //if an object doesnt return it means there is no user logged in
-        if(idObject == null){
+    public ResponseEntity<UserResponseDTO> me(
+            Authentication authentication) {
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        // if it doesnt return null we return the user profile
-        Long userID = (Long) idObject;
-        User loggedInUser = authService.getById(userID);
-        //lets http status know that it is ok and return the response DTO
-        return ResponseEntity.ok(toResponse(loggedInUser));
+        String username = authentication.getName();
+
+        User user = userRepository.findByUserName(username)
+                .orElseThrow();
+
+        return ResponseEntity.ok(toResponse(user));
     }
 
     //this method is for mapping the user entity to the DTO so sensitive info never gets revealed
@@ -100,4 +117,4 @@ public class AuthController {
     }
 
 
-}
+

@@ -75,7 +75,10 @@ public class AuthService {
         return userRepository.save(newUser);
     }
 
-    public User authenticate(String userName, String rawPassword){
+  /*
+  *Using this method initially until I became more familiar with Spring Security
+   *REDUNDANT, USING SPRING SECURITY LOG IN FEATURE NOW
+   public User authenticate(String userName, String rawPassword){
         //make sure the username and password fields are filled
         if(userName == null || userName.isBlank()||rawPassword == null || rawPassword.isBlank()){
             throw new IllegalArgumentException("Username and password cannot be empty");
@@ -91,7 +94,7 @@ public class AuthService {
 
         }
         return preAuthUser;
-    }
+    }*/
 
     //option to search user by long id
     public User getById(Long id){

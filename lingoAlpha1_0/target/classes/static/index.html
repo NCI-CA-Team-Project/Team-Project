@@ -74,7 +74,7 @@
             password: document.getElementById("lPassword").value
         };
 
-        const res = await fetch("/api/auth/login", {
+        const res = await fetch("/api/auth/signin", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",

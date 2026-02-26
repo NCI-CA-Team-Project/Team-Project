@@ -34,6 +34,17 @@ public class User {
     @Column(name = "Birthday")
     private LocalDate birthday;
 
+    @Column(name = "LearningLanguage")
+    private String learningLanguage;
+
+    public String getLearningLanguage() {
+        return learningLanguage;
+    }
+
+    public void setLearningLanguage(String learningLanguage) {
+        this.learningLanguage = learningLanguage;
+    }
+
     // setter and getter
     public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
