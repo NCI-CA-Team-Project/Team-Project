@@ -1,25 +1,80 @@
-// base api helper for reuse in all files i call on apirequest (fetch request, backend url, auth token )
 
-const BASE_URL = import.meta.env.VITE_API_URL; // this reads the backend url from an environment variable, allows us to easily switch between dev and prod backends without hardcoding
+// base api helper fetch request, backend url, auth token
 
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-//api request helper for backend , centralises all http requests so we dont have to repeat over and over
-export async function apiRequest(endpoint, method = "GET", body = null) {
-  const token = localStorage.getItem("token"); // gets the auth user token for protected routes
+// JSON helper endpoints that accept JSON and return JSON
+export async function apiRequest(endpoint, method = "GET", body = null) { // this function runs a fetch request to backend with given endpoint methods
+  const token = localStorage.getItem("token");//this gets token from local storage and adds it to header of request because we need it for protected routes later with jwt
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, { //makes a http request to backend using fetch api 
-    method,     //method is the http method (GET POST etc) default is GET but can be overridden when calling apiRequest
+  const res = await fetch(`${BASE_URL}${endpoint}`, { // this sends the request to backend with the endpoint, await means we need bakend to respond before continuing
+    method, //method is a type of request like gte,post,put,delete
+    headers: { //thi sis the meta data for the request ie content type and auth token 
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },//end header
+    body: body ? JSON.stringify(body) : null,//if bosy isnt null its converted to json string if it is null then statys null
+  });
+
+  if (!res.ok) { 
+    const msg = await safeReadText(res);
+    throw new Error(msg || `Error: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+// Text helper endpoints that return plain text
+export async function apiRequestText(endpoint, method = "GET", body = null) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    method,
     headers: {
-      "Content-Type": "application/json", //tells backend we are sending json data
-      ...(token && { Authorization: `Bearer ${token}` }), //including token 
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: body ? JSON.stringify(body) : null,
   });
 
-  //if backend returns arror like 401 or something we throw an error so we can handle it in the frontend ui
-  if (!response.ok) {
-    throw new Error(`Error: ${response.status}`);
+  if (!res.ok) {
+    const msg = await safeReadText(res);
+    throw new Error(msg || `Error: ${res.status}`);
   }
 
-  return response.json(); 
+  return res.text();
+}
+
+// Form helper endpoints that expect x-www-form-urlencoded and may return text
+export async function apiRequestForm(endpoint, method = "POST", formObject = {}) {
+  const token = localStorage.getItem("token");
+
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(formObject)) {
+    params.append(k, v);
+  }
+
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    method,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: params.toString(),
+  });
+
+  if (!res.ok) {
+    const msg = await safeReadText(res);
+    throw new Error(msg || `Error: ${res.status}`);
+  }
+
+  return res.text();
+}
+
+async function safeReadText(res) {
+  try {
+    return await res.text();
+  } catch {
+    return "";
+  }
 }

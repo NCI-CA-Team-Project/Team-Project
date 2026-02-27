@@ -1,7 +1,8 @@
 // this is the entry point of the app 
 
-import React from "react"; // importing react and react dom because it it will render our react app and broswer router to do routing 
-import ReactDOM from "react-dom/client"; // 
+//IMPORTS ______________________________________________
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";

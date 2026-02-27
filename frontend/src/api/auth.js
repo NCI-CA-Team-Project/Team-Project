@@ -1,98 +1,70 @@
-// api calling backend for login register and auth token management(storing to remember your logged in ), logout)
-// auth.js
-//
-// This file uses apiRequest() from api.js so all requests share: - BASE_URL from VITE_API_URL
-// - JSON body handling
-// - Authorization header when token exists aka shows authorised token at each request
-//token is valid until log out or localStorage cleared
 
-import { apiRequest } from "./api";
+// login, register, token storage, logout and auth checks
 
-// this will be fipped to flase once connected to backend this is just a bypass so i could test 
-const USE_TEMP_BYPASS = true;
+import { apiRequestForm, apiRequest } from "./api.js"; // only importing rrequest form bacuse martins backend currently anyway expects form urlencoded
 
 /**
- * Login a user.
- * @param {string} username
- * @param {string} password
- * @returns {Promise<boolean>} true if login worked, false otherwise
+ * currently login
+ * POST /login
+ * Body: x-www-form-urlencoded (id, password) 
+ * im guessing its form urlencoded as his request mapping below theirs so @RequestBody eg public String login(@RequestBody LoginRequest request) then we could send json or something 
+ *  @PostMapping("/login")
+    public String login(@RequestParam String id,
+                        @RequestParam String password)
+ * Returns: "Login Success" or "Login Failed" (plain text)
  */
-export async function login(username, password) {
-  // Basic input guard: if missing fields, fail fast.
-  if (!username || !password) return false;
+export async function login(id, password) { //takes two inputsand awaits for backend to respond with success
+  if (!id?.trim() || !password) return false;//if any empty retunr false 
 
-  // TEMP BYPASS: lets you build UI before backend
-  if (USE_TEMP_BYPASS) {
-    localStorage.setItem("token", "fake-token");
-    return true;
-  }
+  try {//try login request
+    const text = await apiRequestForm("/login", "POST", { //this calls on our helper function by sending a post request to backend login 
+      id: id.trim(), //sends form urlencoded
+      password,
+    });
 
-  try {
-    // Calls backend for login using apiRequest: POST(aka send ) /auth/login with JSON body : username, password 
-    const data = await apiRequest("/auth/login", "POST", { username, password });
+    if (text.includes("Login Success")) { //if the backend returns a sucess message we set a token in the browser, this isnt real security its just the for nwo 
+      localStorage.setItem("token", "temp-session");
+      return true;
+    }
 
-    // Expect backend to return missing token data 
-    if (!data?.token) return false;
-
-    // Store token so future requests can include auth header
-    localStorage.setItem("token", data.token);
-    return true;
+    return false; //if a failure is returned 
   } catch (err) {
-    // apiRequest throws error like 401 so errror message is sent 
     console.error("Login failed:", err);
     return false;
   }
 }
 
 /**
- * Register a user.
- * @param {string} email
- * @param {string} username
- * @param {string} password
- * @returns {Promise<boolean>} true if register worked, false otherwise
+ * REGISTER:
+ * register only returns false cuz i dont have endpoint for it yet
+ * so this is basically just a placeholder 
  */
-export async function register(email, username, password) {
-  //checks for missing field 
-  if (!email || !username || !password) return false;
-
-  // fake token for testing 
-  if (USE_TEMP_BYPASS) {
-    localStorage.setItem("token", "fake-token");
-    return true;
-  }
-
-  try {
-    // Calls backend: sends(POST) json username, email, pword so it can create accouunt 
-    const data = await apiRequest("/auth/register", "POST", {
-      email,
-      username,
-      password,
-    });
-
-    // Expect backend to return missing token data
-    if (!data?.token) return false;
-
-    localStorage.setItem("token", data.token);
-    return true;
-  } catch (err) {
-    console.error("Register failed:", err);
-    return false;
-  }
+export async function register() {
+  console.warn("Register not working endpoint in backend is missing ");
+  return false;
 }
 
-/**
- * Logs user out by deleting token.
- */
-export function logout() {
+
+// this is how we will do register an dlogin later on when we have jwt implemented on backend 
+
+// export async function loginJwt(username, password) {
+//   const data = await apiRequest("/auth/login", "POST", { username, password });
+//   if (!data?.token) return false;
+//   localStorage.setItem("token", data.token);
+//   return true;
+// }
+//
+// export async function registerJwt(payload) {
+//   const data = await apiRequest("/auth/register", "POST", payload);
+//   if (!data?.token) return false;
+//   localStorage.setItem("token", data.token);
+//   return true;
+// }
+
+export function logout() { //logout i ssimple we just get rid of their token 
   localStorage.removeItem("token");
 }
 
-/**
- * Checks if a token exists.
- * NOTE: This does NOT verify the token is valid. It only checks it's present.
- * @returns {boolean}
- */
-export function isAuthenticated() {
-  // !! converts a truthy string to true, null to false
+export function isAuthenticated() { //this is temporary auth check so only users with a token can go to other pages 
   return !!localStorage.getItem("token");
 }
