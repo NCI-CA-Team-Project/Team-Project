@@ -96,6 +96,18 @@ public class AuthService {
         return preAuthUser;
     }*/
 
+    public User authenticate(String username, String password) {
+
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        return user;
+    }
+
     //option to search user by long id
     public User getById(Long id){
         return userRepository.findById(id)

@@ -5,6 +5,7 @@ import com.lingo.lingoalpha1_0.dto.LoginRequestDTO;
 import com.lingo.lingoalpha1_0.dto.RegisterRequestDTO;
 import com.lingo.lingoalpha1_0.dto.UserResponseDTO;
 import com.lingo.lingoalpha1_0.repository.UserRepository;
+import com.lingo.lingoalpha1_0.security.JwtService;
 import com.lingo.lingoalpha1_0.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,14 +29,14 @@ public class AuthController {
     private final AuthService authService;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
+
 
     //constructor
-    public AuthController(AuthService authService, UserRepository userRepository, AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository){
+    public AuthController(AuthService authService, UserRepository userRepository, AuthenticationManager authenticationManager){
         this.authService = authService;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
-        this.securityContextRepository = securityContextRepository;
+
     }
 
     /*
@@ -63,20 +64,16 @@ public class AuthController {
     and then also establish the session for the user to stay logged in
      */
     @PostMapping("/signin")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.userName(), request.password());
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
 
-        Authentication authentication =
-                authenticationManager.authenticate(token);
+        User user = authService.authenticate(
+                request.userName(),
+                request.password()
+        );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = JwtService.generateToken(user.getUserName());
 
-        httpRequest.getSession(true);
-
-        return ResponseEntity.ok("Login successful");
-    }
-        return ResponseEntity.ok("Logged in successfully");
-
+        return ResponseEntity.ok(token);
     }
 
     /*
@@ -85,7 +82,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpSession session){
-        session.invalidate();
+
         return ResponseEntity.noContent().build();
     }
     /*
@@ -117,4 +114,4 @@ public class AuthController {
     }
 
 
-
+}

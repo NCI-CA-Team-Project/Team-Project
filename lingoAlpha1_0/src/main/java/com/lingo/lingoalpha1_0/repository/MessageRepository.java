@@ -10,11 +10,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     //this queries our database to get messages from two matched users
     @Query("""
-        SELECT m FROM Message m
-        WHERE (m.senderId = :user1 AND m.receiverId = :user2)
-           OR (m.senderId = :user2 AND m.receiverId = :user1)
-        ORDER BY m.messageTime ASC
-    """)
-    List<Message> findConversation(Long SenderId, Long ReceiverId);
+    SELECT m FROM Message m
+    WHERE (m.senderId = :senderId AND m.receiverId = :receiverId)
+       OR (m.senderId = :receiverId AND m.receiverId = :senderId)
+    ORDER BY m.messageTime ASC
+""")
+    List<Message> findConversation(Long senderId, Long receiverId);
 }
 
