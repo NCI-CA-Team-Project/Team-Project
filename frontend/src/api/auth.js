@@ -1,68 +1,83 @@
-
 // login, register, token storage, logout and auth checks
 
-import { apiRequestForm, apiRequest } from "./api.js"; // only importing rrequest form bacuse martins backend currently anyway expects form urlencoded
+import { apiRequestForm, apiRequest } from "./api.js";
 
 
-// export async function loginJwt(username, password) {
-//   const data = await apiRequest("/auth/login", "POST", { username, password });
-//   if (!data?.token) return false;
-//   localStorage.setItem("token", data.token);
-//   return true;
-// }
+//LOGINNNNNNNNNNNNNNNN
+export async function login(id, password) {
+  if (!id?.trim() || !password) return false;
 
-export async function loginJwt(id, password) { //takes two inputsand awaits for backend to respond with success
-  const data = await apiRequest("/auth/login", "POST", { username, password });
-  try {//try login request
-    const text = await apiRequestForm("/login", "POST", { //this calls on our helper function by sending a post request to backend login 
-      id: id.trim(), //sends form urlencoded
+  try {
+    const text = await apiRequestForm("/login", "POST", {
+      id: id.trim(),
       password,
     });
 
-    if (text.includes("Login Success")) { //if the backend returns a sucess message we set a token in the browser, this isnt real security its just the for nwo 
+    if (text.includes("Login Success")) {
+      // temporary fake session until backend returns a real JWT
       localStorage.setItem("token", "temp-session");
       return true;
     }
 
-    return false; //if a failure is returned 
+    return false;
   } catch (err) {
     console.error("Login failed:", err);
     return false;
   }
 }
-  
 
-/**
- * REGISTER:
- * register only returns false cuz i dont have endpoint for it yet
- * so this is basically just a placeholder 
- */
+export async function loginJwt(id, password) {
+  if (!id?.trim() || !password) return false;
+
+  try {
+    const data = await apiRequest("/auth/login", "POST", {
+      id: id.trim(),
+      password,
+    });
+
+    if (!data?.token) return false;
+
+    localStorage.setItem("token", data.token);
+    return true;
+  } catch (err) {
+    console.error("JWT login failed:", err);
+    return false;
+  }
+}
+
+
+//REGISTERRRRRRRRR
 export async function register() {
-  console.warn("Register not working endpoint in backend is missing ");
+  console.warn("Register not working");
   return false;
 }
 
 
-// this is how we will do register an dlogin later on when we have jwt implemented on backend 
 
-// export async function loginJwt(username, password) {
-//   const data = await apiRequest("/auth/login", "POST", { username, password });
-//   if (!data?.token) return false;
-//   localStorage.setItem("token", data.token);
-//   return true;
-// }
-//
-// export async function registerJwt(payload) {
-//   const data = await apiRequest("/auth/register", "POST", payload);
-//   if (!data?.token) return false;
-//   localStorage.setItem("token", data.token);
-//   return true;
-// }
+export async function registerJwt(payload) {
+  try {
+    const data = await apiRequest("/auth/register", "POST", payload);
 
-export function logout() { //logout i ssimple we just get rid of their token 
-  localStorage.removeItem("token");
+    if (!data?.token) return false;
+
+    localStorage.setItem("token", data.token);
+    return true;
+  } catch (err) {
+    console.error("JWT register failed:", err);
+    return false;
+  }
 }
 
-export function isAuthenticated() { //this is temporary auth check so only users with a token can go to other pages 
+
+//LOGOUTTTTTTTTTTT
+export function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+}
+
+
+//AUTHHHH CHECKKK 
+
+export function isAuthenticated() {
   return !!localStorage.getItem("token");
 }

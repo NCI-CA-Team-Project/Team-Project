@@ -16,6 +16,7 @@ import Profile from "../pages/profile";
 import Layout from "../components/Layout";
 import Stats from "../pages/stats";
 import Messages from "../pages/messages";
+import viewProfile from "../pages/viewProfile";
 
 //COMPONENT FUNCTION _____________________________________
 export default function AppRoutes() { // sets up routing for landing login register and app pages
@@ -34,6 +35,7 @@ export default function AppRoutes() { // sets up routing for landing login regis
         <Route path="/pay" element={<Pay />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/stats" element={<Stats />} />
+        <Route path="/viewProfile" element={<viewProfile />} />
       </Route>
 
       {/* fallback route */}
