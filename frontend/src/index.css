@@ -1,7 +1,9 @@
-/* ===================================================== */
-/* ================= BASE ROOT ========================= */
-/* ===================================================== */
 
+/*=======================================================================
+/
+/BASE STYLESSSSSSSSSSSSSSSSSSSSSSSSSSS
+/
+=======================================================================*/
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -29,10 +31,12 @@ body {
   min-height: 100vh;
 }
 
-/* ===================================================== */
-/* ================= LINKS ============================= */
-/* ===================================================== */
 
+/*=======================================================================
+/
+/LINKSSSSSSSSSSSSSSSSSSSSS AND HEADINGSSSSSSSSSSSS  eg login
+/
+================================================================*/
 a {
   font-weight: 500;
   color: var(--accent);
@@ -43,19 +47,16 @@ a:hover {
   filter: brightness(1.1);
 }
 
-/* ===================================================== */
-/* ================= HEADINGS ========================== */
-/* ===================================================== */
-
 h1 {
   font-size: 2rem;
   margin: 0;
 }
 
-/* ===================================================== */
-/* ================= BUTTONS =========================== */
-/* ===================================================== */
-
+/*=======================================================================
+/
+/BUTONSSSSSSSSSSSSS
+/
+=====================================================================*/
 button {
   border-radius: 10px;
   border: none;
@@ -121,102 +122,457 @@ button:hover {
   box-shadow: 0 0 0 3px rgba(100,108,255,0.25);
 }
 
-/* ===================================================== */
-/* ================= APP LAYOUT ======================== */
-/* ===================================================== */
+/*=======================================================================
+/
+/AUTH PAGESS eg login 
+/
+=====================================================================*/
+.logout-btn {
+  margin-top: 10px;
+  color: #ff6b6b;
+}
 
-.app {
+.logout-btn:hover {
+  background: rgba(255,0,0,0.08);
+}
+
+.app-shell {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 240px 1fr;
-}
-
-/* sidebar */
-
-.sidebar {
-  background: #181818;
-  border-right: 1px solid rgba(255,255,255,0.08);
-  padding: 14px;
-}
-
-.sidebar-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.brand {
-  margin: 0;
-  font-size: 18px;
-}
-
-/* nav */
-
-.nav {
-  display: grid;
-  gap: 10px;
-}
-
-.item {
-  display: block;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-main);
   color: var(--text-main);
 }
 
-.item:hover {
+/* top bar */
+
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  background: #181818;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* menu buttons */
+
+.menu-btn,
+.close-btn {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  font-size: 1.1rem;
+}
+
+.menu-btn:hover,
+.close-btn:hover {
+  color: var(--accent);
+  border-color: rgba(100,108,255,0.4);
   background: rgba(255,255,255,0.08);
 }
 
-.item.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(100,108,255,0.2);
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 29;
 }
 
-/* content area */
 
-.content {
+
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100vh;
+  background: #181818;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 30;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* toggle button */
+.side-menu.open {
+  transform: translateX(0);
+}
 
-.toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+}
+
+
+
+.menu-links {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-item {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: white;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.menu-item:hover {
+  color: var(--accent);
   background: rgba(255,255,255,0.06);
+  border-color: rgba(100,108,255,0.35);
+}
+
+.menu-item.active {
+  color: var(--accent);
+  border-color: rgba(100,108,255,0.45);
+  box-shadow: 0 0 0 3px rgba(100,108,255,0.14);
+  background: rgba(255,255,255,0.05);
+}
+
+
+
+.page-content {
+  padding: 24px;
+}
+
+
+/* ===================================================== 
+/
+/HOME PAGEEEE aka matching page
+/
+=======================================================*/
+.home-page {
+  min-height: calc(100vh - 64px);
+  padding: 32px;
+  background: #353135; 
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.home-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: white;
+}
+
+.home-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.arrow-btn {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: white;
+  font-size: 1.4rem;
+}
+
+.arrow-btn:hover {
+  color: var(--accent);
+  border-color: rgba(100,108,255,0.4);
+  background: rgba(255,255,255,0.07);
+}
+
+.swipe-card {
+  width: 320px;
+  background: #181818;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
+
+.swipe-image-box {
+  width: 100%;
+  height: 360px;
+  background: #111;
+  overflow: hidden;
+}
+
+.swipe-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.swipe-info {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  color: white;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .home-page {
+    padding: 20px;
+  }
+
+  .home-main {
+    gap: 14px;
+  }
+
+  .swipe-card {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .arrow-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 1.2rem;
+  }
+}
+
+/*======================================================
+/
+/MESSAGES PAGE 
+/
+=======================================================*/
+.messages-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+
+/*=======================================================
+/
+/MESSAGE AND CHAT PAGES
+/
+=======================================================*/
+/* MESSAGES PAGE */
+
+.messages-page {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.messages-top h1 {
+  margin-bottom: 15px;
+}
+
+.messages-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: none;
+  background: #2d2d35;
   color: white;
   cursor: pointer;
 }
 
-/* collapsed sidebar */
-
-.nav-closed {
-  grid-template-columns: 64px 1fr;
+.filter-btn.active {
+  background: #5b7cff;
 }
 
-.nav-closed .item {
-  text-align: center;
-  font-size: 13px;
-  padding: 10px 6px;
+/* conversation list */
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* ===================================================== */
-/* ================= MOBILE ============================ */
-/* ===================================================== */
+.message-row {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  background: #1e1e25;
+  cursor: pointer;
+  transition: background 0.2s;
+}
 
+.message-row:hover {
+  background: #2a2a32;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+.message-main {
+  flex: 1;
+}
+
+.message-name {
+  font-weight: bold;
+}
+
+.message-preview {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.message-time {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* CHAT PAGE */
+
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  padding: 20px;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.chat-back-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.chat-title {
+  margin: 0;
+}
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* message container */
+
+.chat-message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.chat-message.mine {
+  justify-content: flex-end;
+}
+
+.chat-message.theirs {
+  justify-content: flex-start;
+}
+
+/* bubble */
+
+.chat-bubble {
+  max-width: 60%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #2d2d35;
+}
+
+.chat-message.mine .chat-bubble {
+  background: #5b7cff;
+}
+
+.chat-text {
+  margin: 0;
+}
+
+.chat-time {
+  font-size: 11px;
+  opacity: 0.6;
+  display: block;
+  margin-top: 4px;
+}
+
+/* input */
+
+.chat-input-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+.chat-send-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #5b7cff;
+  color: white;
+  cursor: pointer;
+}
+
+/*======================================================
+/
+/MOBILE FORMATTING
+/
+=======================================================*/
 @media (max-width: 820px) {
-  .app {
-    grid-template-columns: 1fr;
+  .topbar {
+    padding: 0 14px;
   }
 
-  .sidebar {
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+  .page-content {
+    padding: 16px;
+  }
+
+  .side-menu {
+    width: 250px;
   }
 }

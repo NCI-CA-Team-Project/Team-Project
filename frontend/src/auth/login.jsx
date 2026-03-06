@@ -33,7 +33,7 @@ export default function Login() { //this function runs the login page logic and 
 
     const ok = await login(id.trim(), password);//  calls backend and waits for response 
 
-    if (ok) navigate("/");//sucess = they go home page 
+    if (ok) navigate("/home");//sucess = they go home page 
     else setError("Login failed.");
 
     setLoading(false); //stop loading state so button  is active again

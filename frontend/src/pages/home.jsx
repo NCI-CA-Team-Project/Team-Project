@@ -1,106 +1,216 @@
-// homepage after successful login 
+// homepage after successful login
 
 // IMPORTS ______________________________________________
-import { useNavigate } from "react-router-dom";
-
+import { useEffect, useMemo, useState } from "react";
+import {getPotentialMatches, likeMatch, passMatch} from "../api/matching.js";
 
 //COMPONENT FUNCTION _____________________________________
 export default function Home() {
+  // temporary username until backend profile/user endpoint exists
+  const username = useMemo(() => {
+    return localStorage.getItem("username") || "User";
+  }, []);
 
-  const navigate = useNavigate();//creates  a naviagtion function i can use 
+  // state for backend-loaded matches
+  const [matches, setMatches] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleLogout = () => {// calls on the logout function then bring suser to login page 
-    logout();
-    navigate("/login");
-  };
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  // load possible matches from backend
+  useEffect(() => {
+    async function loadMatches() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getPotentialMatches();
+        const safeMatches = Array.isArray(data) ? data : [];
+
+        setMatches(safeMatches);
+        setCurrentIndex(0);
+      } catch (err) {
+        setError("Failed to load matches.");
+        setMatches([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadMatches();
+  }, []);
+
+  // current card being shown
+  const currentMatch = matches[currentIndex];
+
+  // move backward manually
+  function handlePrevious() {
+    if (matches.length === 0 || actionLoading) return;
+
+    setCurrentIndex((prev) => {
+      if (prev === 0) return matches.length - 1;
+      return prev - 1;
+    });
+  }
+
+  // move forward manually
+  function handleNext() {
+    if (matches.length === 0 || actionLoading) return;
+
+    setCurrentIndex((prev) => {
+      if (prev === matches.length - 1) return 0;
+      return prev + 1;
+    });
+  }
+
+  // remove current card after like/pass
+  function removeCurrentMatch() {
+    setMatches((prevMatches) => {
+      if (prevMatches.length === 0) return prevMatches;
+
+      const updatedMatches = prevMatches.filter(
+        (_, index) => index !== currentIndex
+      );
+
+      if (updatedMatches.length === 0) {
+        setCurrentIndex(0);
+        return updatedMatches;
+      }
+
+      if (currentIndex >= updatedMatches.length) {
+        setCurrentIndex(updatedMatches.length - 1);
+      }
+
+      return updatedMatches;
+    });
+  }
+
+  // like action
+  async function handleLike() {
+    if (!currentMatch || actionLoading) return;
+
+    try {
+      setActionLoading(true);
+      setError("");
+
+      await likeMatch(currentMatch.id);
+      removeCurrentMatch();
+    } catch (err) {
+      setError("Failed to like user.");
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  // pass action
+  async function handlePass() {
+    if (!currentMatch || actionLoading) return;
+
+    try {
+      setActionLoading(true);
+      setError("");
+
+      await passMatch(currentMatch.id);
+      removeCurrentMatch();
+    } catch (err) {
+      setError("Failed to pass user.");
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  // fallback image if backend gives nothing
+  const profileImage =
+    currentMatch?.profileImage ||
+    "https://via.placeholder.com/320x360.png?text=Profile+Image";
+
+  //RETURN JSX AKA UI________________________________________
   return (
-    <div style={styles.page}>
-
-      {/* Welcome Header */}
-      <div style={styles.header}>
-        <h2>welcome back, name</h2>
-        <button onClick={handleLogout}>Logout</button>
+    <div className="home-page">
+      {/* welcome message with username */}
+      <div className="home-header">
+        <h1>Welcome back, {username}</h1>
       </div>
 
-      {/* Main Card Section */}
-      <div style={styles.main}>
+      {/* Main Swipe Section */}
+      <div className="home-main">
+        <button
+          className="arrow-btn"
+          onClick={handlePrevious}
+          disabled={loading || matches.length === 0 || actionLoading}
+        >
+          ⬅
+        </button>
 
-        <button style={styles.arrow}>◀</button>
+        <div className="swipe-card">
+          {loading ? (
+            <p className="home-status">Loading matches...</p>
+          ) : error ? (
+            <p className="home-error">{error}</p>
+          ) : !currentMatch ? (
+            <p className="home-status">No matches available right now.</p>
+          ) : (
+            <>
+              {/* image box */}
+              <div className="swipe-image-box">
+                <img
+                  src={profileImage}
+                  alt={`profile of ${currentMatch.name || "user"}`}
+                  className="swipe-image"
+                />
+              </div>
 
-        <div style={styles.card}>
-          <div style={styles.imageBox}>
-            swiping picture
-          </div>
+              {/* card info */}
+              <div className="swipe-info">
+                {currentMatch.name || "Unknown User"}
+              </div>
 
-          <div style={styles.info}>level</div>
-          <div style={styles.info}>5/5 stars</div>
-          <div style={styles.info}>interests</div>
+              <div className="swipe-info">
+                {currentMatch.level || "Level not set"}
+              </div>
+
+              <div className="swipe-info">
+                {currentMatch.rating || "No rating yet"}
+              </div>
+
+              <div className="swipe-info">
+                Interests: {currentMatch.interests?.join(", ") || "None listed"}
+              </div>
+
+              {/* action buttons */}
+              <div className="swipe-actions">
+                <button
+                  className="pass-btn"
+                  onClick={handlePass}
+                  disabled={actionLoading}
+                  type="button"
+                >
+                  {actionLoading ? "Working..." : "Pass"}
+                </button>
+
+                <button
+                  className="like-btn"
+                  onClick={handleLike}
+                  disabled={actionLoading}
+                  type="button"
+                >
+                  {actionLoading ? "Working..." : "Like"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        <button style={styles.arrow}>▶</button>
-
+        <button
+          className="arrow-btn"
+          onClick={handleNext}
+          disabled={loading || matches.length === 0 || actionLoading}
+        >
+          ➡
+        </button>
       </div>
-
-      {/* Bottom Nav */}
-      <div style={styles.bottom}>
-        <div>messages</div>
-        <div>blahblah</div>
-        <div>blahblah</div>
-      </div>
-
     </div>
   );
 }
-
-const styles = {
-  page: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: 40,
-    boxSizing: "border-box"
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center"
-  },
-  main: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 40
-  },
-  card: {
-    width: 250,
-    border: "2px solid black",
-    display: "flex",
-    flexDirection: "column",
-    textAlign: "center"
-  },
-  imageBox: {
-    height: 200,
-    borderBottom: "2px solid black",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  info: {
-    padding: 10,
-    borderBottom: "1px solid black"
-  },
-  arrow: {
-    fontSize: 24,
-    cursor: "pointer",
-    background: "none",
-    border: "none"
-  },
-  bottom: {
-    display: "flex",
-    justifyContent: "space-around",
-    borderTop: "2px solid black",
-    paddingTop: 20
-  }
-};

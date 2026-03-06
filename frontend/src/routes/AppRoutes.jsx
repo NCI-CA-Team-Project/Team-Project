@@ -6,27 +6,37 @@
 import { Routes, Route, Navigate } from "react-router-dom"; // importing routes which is a container for route definitions
                                                             //importing route which define sone route
                                                             //importing naviaget to redirect users 
-import Login from "../auth/login";//just importing my react components so i denfine their routes
+import Login from "../auth/login";
 import Register from "../auth/register";
-import Home from "../pages/landing";
+import Landing from "../pages/landing";
+import Home from "../pages/home";
 import Chat from "../pages/Chat";
 import Pay from "../pages/pay";
 import Profile from "../pages/profile";
-
+import Layout from "../components/Layout";
+import Stats from "../pages/stats";
+import Messages from "../pages/messages";
 
 //COMPONENT FUNCTION _____________________________________
-export default function AppRoutes() {//sets up routing for login register nad home page 
+export default function AppRoutes() { // sets up routing for landing login register and app pages
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      {/* public pages */}
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/chat" element={<Chat />} />
-      <Route path="/pay" element={<Pay />} />
-      <Route path="/profile" element={<Profile />} />
-      
 
-      {/* for safety only but if user tries to use a route that doesnt exist they will be sent to the home page*/}   
+      {/* app pages inside layout */}
+      <Route element={<Layout />}>
+        <Route path="/home" element={<Home />} />
+        <Route path="/chat/:id" element={<Chat />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/pay" element={<Pay />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/stats" element={<Stats />} />
+      </Route>
+
+      {/* fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

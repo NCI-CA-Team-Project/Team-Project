@@ -3,19 +3,16 @@
 
 import { apiRequestForm, apiRequest } from "./api.js"; // only importing rrequest form bacuse martins backend currently anyway expects form urlencoded
 
-/**
- * currently login
- * POST /login
- * Body: x-www-form-urlencoded (id, password) 
- * im guessing its form urlencoded as his request mapping below theirs so @RequestBody eg public String login(@RequestBody LoginRequest request) then we could send json or something 
- *  @PostMapping("/login")
-    public String login(@RequestParam String id,
-                        @RequestParam String password)
- * Returns: "Login Success" or "Login Failed" (plain text)
- */
-export async function login(id, password) { //takes two inputsand awaits for backend to respond with success
-  if (!id?.trim() || !password) return false;//if any empty retunr false 
 
+// export async function loginJwt(username, password) {
+//   const data = await apiRequest("/auth/login", "POST", { username, password });
+//   if (!data?.token) return false;
+//   localStorage.setItem("token", data.token);
+//   return true;
+// }
+
+export async function loginJwt(id, password) { //takes two inputsand awaits for backend to respond with success
+  const data = await apiRequest("/auth/login", "POST", { username, password });
   try {//try login request
     const text = await apiRequestForm("/login", "POST", { //this calls on our helper function by sending a post request to backend login 
       id: id.trim(), //sends form urlencoded
@@ -33,6 +30,7 @@ export async function login(id, password) { //takes two inputsand awaits for bac
     return false;
   }
 }
+  
 
 /**
  * REGISTER:
