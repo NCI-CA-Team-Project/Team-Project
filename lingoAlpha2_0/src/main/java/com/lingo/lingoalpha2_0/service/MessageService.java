@@ -1,9 +1,12 @@
 package com.lingo.lingoalpha2_0.service;
 
+import com.lingo.lingoalpha2_0.dto.MessageResponseDTO;
 import com.lingo.lingoalpha2_0.entity.Message;
 import com.lingo.lingoalpha2_0.repository.MatchRepository;
 import com.lingo.lingoalpha2_0.repository.MessageRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,7 +28,10 @@ public class MessageService {
 //if users aren't matched we throw a run time exception
         if(!usersMatched){
             //throw new exits the current method when if is executed
-            throw new RuntimeException("Users are not matched!");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Users must be matched to message"
+            );
         }
         // create new message entity
         Message message = new Message(senderId, receiverId, messageContent);
@@ -34,13 +40,26 @@ public class MessageService {
     }
 //this is to get our messages, we will use the method from the repo to pull our messages and then use a loop to make sure they are between the 2 users and list them
     public List<Message> getConversation(Long senderId, Long receiverId){
+        boolean usersMatched = matchRepository.findMatchBetween(senderId, receiverId).isPresent();
         List<Message> messages = messageRepository.findConversation(senderId, receiverId);
         //this is to check if the user is in a match, if they are then we can pull the message ( ADDITIONAL ERROR HANDLING )
-        boolean usersMatched = matchRepository.findMatchBetween(senderId, receiverId).isPresent();
+
         if(!usersMatched){
-            throw new RuntimeException("Users are not matched!");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Users must be matched to message"
+            );
         }
 
         return messages;
+    }
+
+    public MessageResponseDTO mapToDTO(Message message){
+        return new MessageResponseDTO(message.getId(),
+                message.getSenderId(),
+                message.getReceiverId(),
+                message.getMessageContent(),
+                message.getMessageTime()
+                );
     }
 }

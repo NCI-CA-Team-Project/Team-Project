@@ -1,5 +1,6 @@
 package com.lingo.lingoalpha2_0.controller;
 
+import com.lingo.lingoalpha2_0.dto.MessageResponseDTO;
 import com.lingo.lingoalpha2_0.dto.SendMessageRequestDTO;
 import com.lingo.lingoalpha2_0.entity.Message;
 import com.lingo.lingoalpha2_0.entity.User;
@@ -10,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,26 +28,31 @@ public class MessageController {
 
 //sending a message
     @PostMapping("/send/{receiverId}")
-    public ResponseEntity<Message> sendMessage(@PathVariable Long receiverId, @RequestBody SendMessageRequestDTO sendMessageRequestDTO, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<MessageResponseDTO> sendMessage(@PathVariable Long receiverId, @RequestBody SendMessageRequestDTO sendMessageRequestDTO, @AuthenticationPrincipal UserDetails userDetails){
         User sender = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
         Message message = messageService.sendMessage(sender.getId(), receiverId, sendMessageRequestDTO.messageContent());
 
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(messageService.mapToDTO(message));
     }
 
     //getting a conversation
     //need to change the response to a message response DTO
     @GetMapping("/{otherUserId}")
-    public ResponseEntity<List<Message>> getConversation(@PathVariable Long otherUserId, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<List<MessageResponseDTO>> getConversation(@PathVariable Long otherUserId, @AuthenticationPrincipal UserDetails userDetails){
         User currentUser = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
         List<Message> conversation = messageService.getConversation(currentUser.getId(), otherUserId);
 
+        List<MessageResponseDTO> messageResponse = new ArrayList<>();
+
+        for (Message message : conversation) {
+            messageResponse.add(messageService.mapToDTO(message));
+        }
 
 
-        return ResponseEntity.ok(conversation);
+        return ResponseEntity.ok(messageResponse);
     }
 }
