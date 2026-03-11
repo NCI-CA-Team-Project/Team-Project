@@ -10,7 +10,7 @@ import { login } from "../api/auth.js"; //this function talks to backend
 export default function Login() { //this function runs the login page logic and ui when its called eg through a lkink 
 
 //HOOKS / STATE SETUP _____________________________________
-  const [id, setId] = useState(""); //starting with "" then setID is a function to updat eit to users input 
+  const [username, setUsername] = useState(""); //starting with "" then setID is a function to updat eit to users input 
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
@@ -24,14 +24,14 @@ export default function Login() { //this function runs the login page logic and 
     e.preventDefault();//stops refreshing when forms submitted which is important because react app is a spa so we dont want to refresh the page and lose all our state and stuff
     setError(""); //clears old error messages 
 
-    if (!id.trim() || !password) {//clears whitspace and checks user entered all fields 
-      setError("Please enter your id and password");
+    if (!username.trim() || !password) {//clears whitspace and checks user entered all fields 
+      setError("Please enter your username and password");
       return;
     }
 
     setLoading(true); // disables button and changes text to logging in 
 
-    const ok = await login(id.trim(), password);//  calls backend and waits for response 
+    const ok = await login(username.trim(), password);//  calls backend and waits for response 
 
     if (ok) navigate("/home");//sucess = they go home page 
     else setError("Login failed.");
@@ -50,9 +50,9 @@ export default function Login() { //this function runs the login page logic and 
 
         <form onSubmit={handleSubmit}>
           <input
-            placeholder="id"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
+            placeholder="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
 
           <input

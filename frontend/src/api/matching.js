@@ -1,16 +1,17 @@
 import { apiRequest } from "./api.js";
 
-// get users availabl
+
+//get other userss
 export async function getPotentialMatches() {
-  return apiRequest("/matches", "GET");
+  return await apiRequest("/api/users/browse", "GET");
 }
 
-// send likes
+//like anothe ruser
 export async function likeMatch(userId) {
-  return apiRequest("/matches/like", "POST", { userId });
+  return await apiRequest(`/api/match/connect/${userId}`, "POST");
 }
 
-// send passes
+//future stuffff
 export async function passMatch(userId) {
-  return apiRequest("/matches/pass", "POST", { userId });
+  return true;
 }

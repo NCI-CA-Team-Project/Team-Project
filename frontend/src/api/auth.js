@@ -4,40 +4,40 @@ import { apiRequestForm, apiRequest } from "./api.js";
 
 
 //LOGINNNNNNNNNNNNNNNN
-export async function login(id, password) {
-  if (!id?.trim() || !password) return false;
+export async function login(username, password) {
+  if (!username?.trim() || !password) return false;
 
   try {
-    const text = await apiRequestForm("/login", "POST", {
-      id: id.trim(),
+    const token = await apiRequest("/api/auth/signin", "POST", {
+      userName: username.trim(),
       password,
     });
 
-    if (text.includes("Login Success")) {
-      // temporary fake session until backend returns a real JWT
-      localStorage.setItem("token", "temp-session");
-      return true;
-    }
+    if (!token) return false;
 
-    return false;
+    // temporary fake session until backend returns a real JWT
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", username.trim());
+    return true;
   } catch (err) {
     console.error("Login failed:", err);
     return false;
   }
 }
 
-export async function loginJwt(id, password) {
-  if (!id?.trim() || !password) return false;
+export async function loginJwt(username, password) {
+  if (!username?.trim() || !password) return false;
 
   try {
-    const data = await apiRequest("/auth/login", "POST", {
-      id: id.trim(),
+    const token = await apiRequest("/api/auth/signin", "POST", {
+      userName: username.trim(),
       password,
     });
 
-    if (!data?.token) return false;
+    if (!token) return false;
 
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", username.trim());
     return true;
   } catch (err) {
     console.error("JWT login failed:", err);
@@ -47,21 +47,22 @@ export async function loginJwt(id, password) {
 
 
 //REGISTERRRRRRRRR
-export async function register() {
-  console.warn("Register not working");
-  return false;
+export async function register(payload) {
+  try {
+    const data = await apiRequest("/api/auth/register", "POST", payload);
+    return data;
+  } catch (err) {
+    console.error("Register failed:", err);
+    return false;
+  }
 }
 
 
 
 export async function registerJwt(payload) {
   try {
-    const data = await apiRequest("/auth/register", "POST", payload);
-
-    if (!data?.token) return false;
-
-    localStorage.setItem("token", data.token);
-    return true;
+    const data = await apiRequest("/api/auth/register", "POST", payload);
+    return data;
   } catch (err) {
     console.error("JWT register failed:", err);
     return false;
@@ -70,7 +71,13 @@ export async function registerJwt(payload) {
 
 
 //LOGOUTTTTTTTTTTT
-export function logout() {
+export async function logout() {
+  try {
+    await apiRequest("/api/auth/logout", "POST");
+  } catch (err) {
+    console.error("Logout request failed:", err);
+  }
+
   localStorage.removeItem("token");
   localStorage.removeItem("username");
 }

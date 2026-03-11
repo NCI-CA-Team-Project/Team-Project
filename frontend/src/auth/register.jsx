@@ -40,14 +40,13 @@ export default function Register() {
 
     setLoading(true); // diables button while we wait for backend response
 
-    const ok = await register({ //calls backend and gives user inputs then waits for response 
-      name: name.trim(),
-      surname: surname.trim(),
-      birthdate,
+    const ok = await register({
+      firstName: name.trim(),
+      lastName: surname.trim(),
+      birthday: birthdate,
       email: email.trim(),
-      username: username.trim(),
+      userName: username.trim(),
       password,
-      confirmPassword,
     });
 
     if (ok) navigate("/"); //if registration is valid they are sent to home will change this to send to login as i think that how most sites work 

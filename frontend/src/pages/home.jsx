@@ -2,7 +2,7 @@
 
 // IMPORTS ______________________________________________
 import { useEffect, useMemo, useState } from "react";
-import {getPotentialMatches, likeMatch, passMatch} from "../api/matching.js";
+import { getPotentialMatches, likeMatch, passMatch } from "../api/matching.js";
 
 //COMPONENT FUNCTION _____________________________________
 export default function Home() {
@@ -121,11 +121,6 @@ export default function Home() {
     }
   }
 
-  // fallback image if backend gives nothing
-  const profileImage =
-    currentMatch?.profileImage ||
-    "https://via.placeholder.com/320x360.png?text=Profile+Image";
-
   //RETURN JSX AKA UI________________________________________
   return (
     <div className="home-page">
@@ -153,30 +148,23 @@ export default function Home() {
             <p className="home-status">No matches available right now.</p>
           ) : (
             <>
-              {/* image box */}
-              <div className="swipe-image-box">
-                <img
-                  src={profileImage}
-                  alt={`profile of ${currentMatch.name || "user"}`}
-                  className="swipe-image"
-                />
-              </div>
-
               {/* card info */}
+          <div className="swipe-info">
+            {currentMatch.firstName && currentMatch.lastName
+              ? `${currentMatch.firstName} ${currentMatch.lastName}`
+              : currentMatch.userName || "Unknown User"}
+          </div>
+
+          <div className="swipe-info">
+            Username: {currentMatch.userName || "Not set"}
+          </div>
+
               <div className="swipe-info">
-                {currentMatch.name || "Unknown User"}
+                Email: {currentMatch.email || "Not set"}
               </div>
 
               <div className="swipe-info">
-                {currentMatch.level || "Level not set"}
-              </div>
-
-              <div className="swipe-info">
-                {currentMatch.rating || "No rating yet"}
-              </div>
-
-              <div className="swipe-info">
-                Interests: {currentMatch.interests?.join(", ") || "None listed"}
+                Birthday: {currentMatch.birthday || "Not set"}
               </div>
 
               {/* action buttons */}

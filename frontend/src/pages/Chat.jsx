@@ -1,41 +1,38 @@
 // single chat conversation page
 // loads message history from backend and lets user send a new message
 
-
 //IMPORTS___________________________________________
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiRequest } from "../api/api.js";
 
-
 //COMPONENT FUNCTION _____________________________________
 export default function Chat() {
 
+  //HOOKS / STATE SETUP _____________________________________
+  const { id } = useParams(); // route is /chat/:id so grab id
+  const otherUserId = id;
 
-//HOOKS / STATE SETUP _____________________________________
-  const { conversationId } = useParams(); // gets conversation id from the url eg /chat/5
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
 
-  const [messages, setMessages] = useState([]); // stores messages loaded from backend
-  const [newMessage, setNewMessage] = useState(""); // stores current input value
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const [loading, setLoading] = useState(true); // loading state while messages are being fetched
-  const [sending, setSending] = useState(false); // sending state while posting new message
-  const [error, setError] = useState(""); // stores backend or network errors
-
-
-//HELPER FUNCTIONS AND HANDLERS _____________________________________
-
-  // load existing messages for this conversation
+  //HELPER FUNCTIONS AND HANDLERS _____________________________________
   const loadMessages = async () => {
     try {
       setLoading(true);
       setError("");
 
-      // expected backend endpoint example:
-      // GET /conversations/{conversationId}/messages
-      const data = await apiRequest(`/conversations/${conversationId}/messages`, "GET");
+      // get current logged in user
+      const me = await apiRequest("/api/auth/me", "GET");
+      setCurrentUserId(me.id);
 
-      // backend should return an array of message objects
+      // get conversation with selected user
+      const data = await apiRequest(`/api/messages/${otherUserId}`, "GET");
       setMessages(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load messages:", err);
@@ -45,19 +42,16 @@ export default function Chat() {
     }
   };
 
-  // run once when page opens or when conversation id changes
   useEffect(() => {
-    if (!conversationId) {
-      setError("No conversation selected.");
+    if (!otherUserId) {
+      setError("No chat selected.");
       setLoading(false);
       return;
     }
 
     loadMessages();
-  }, [conversationId]);
+  }, [otherUserId]);
 
-
-  // send a new message to backend
   const handleSend = async (e) => {
     e.preventDefault();
 
@@ -68,22 +62,18 @@ export default function Chat() {
       setError("");
 
       const payload = {
-        text: newMessage.trim(),
+        messageContent: newMessage.trim(),
       };
 
-      // expected backend endpoint example:
-      // POST /conversations/{conversationId}/messages
       const createdMessage = await apiRequest(
-        `/conversations/${conversationId}/messages`,
+        `/api/messages/send/${otherUserId}`,
         "POST",
         payload
       );
 
-      // if backend returns the newly created message, append it to screen immediately
       if (createdMessage) {
         setMessages((prev) => [...prev, createdMessage]);
       } else {
-        // fallback: reload messages if backend does not return created message
         await loadMessages();
       }
 
@@ -96,21 +86,16 @@ export default function Chat() {
     }
   };
 
-
-//RETURN JSX AKA UI________________________________________
+  //RETURN JSX AKA UI________________________________________
   return (
     <div className="chat-page">
-
-      {/* chat page header */}
       <div className="chat-header">
         <h1>Chat</h1>
-        <p>Conversation ID: {conversationId}</p>
+        <p>User ID: {otherUserId}</p>
       </div>
 
-      {/* error message */}
       {error && <p className="chat-error">{error}</p>}
 
-      {/* messages area */}
       <div className="chat-messages">
         {loading ? (
           <p>Loading messages...</p>
@@ -121,19 +106,22 @@ export default function Chat() {
             <div
               key={message.id}
               className={
-                message.sender === "me" || message.sentByCurrentUser
+                message.senderId === currentUserId
                   ? "chat-bubble mine"
                   : "chat-bubble theirs"
               }
             >
-              <p>{message.text}</p>
-              <span>{message.time || message.createdAt || ""}</span>
+              <p>{message.messageContent}</p>
+              <span>
+                {message.messageTime
+                  ? new Date(message.messageTime).toLocaleString()
+                  : ""}
+              </span>
             </div>
           ))
         )}
       </div>
 
-      {/* send message form */}
       <form className="chat-form" onSubmit={handleSend}>
         <input
           type="text"
@@ -146,7 +134,6 @@ export default function Chat() {
           {sending ? "Sending..." : "Send"}
         </button>
       </form>
-
     </div>
   );
 }

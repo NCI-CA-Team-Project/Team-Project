@@ -1,11 +1,7 @@
-//defines all of the aplication routes and what component to dhow for each route
-
+//defines all of the application routes and what component to show for each route
 
 //IMPORTS ______________________________________________
-
-import { Routes, Route, Navigate } from "react-router-dom"; // importing routes which is a container for route definitions
-                                                            //importing route which define sone route
-                                                            //importing naviaget to redirect users 
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../auth/login";
 import Register from "../auth/register";
 import Landing from "../pages/landing";
@@ -16,10 +12,10 @@ import Profile from "../pages/profile";
 import Layout from "../components/Layout";
 import Stats from "../pages/stats";
 import Messages from "../pages/messages";
-import viewProfile from "../pages/viewProfile";
+import ViewProfile from "../pages/viewProfile";
 
 //COMPONENT FUNCTION _____________________________________
-export default function AppRoutes() { // sets up routing for landing login register and app pages
+export default function AppRoutes() {
   return (
     <Routes>
       {/* public pages */}
@@ -35,13 +31,11 @@ export default function AppRoutes() { // sets up routing for landing login regis
         <Route path="/pay" element={<Pay />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/stats" element={<Stats />} />
-        <Route path="/viewProfile" element={<viewProfile />} />
+        <Route path="/viewProfile/:userId" element={<ViewProfile />} />
       </Route>
 
       {/* fallback route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
-
-  //now i can say inside app components <Link to="/register">Register here</Link> and itll take user to register page  
 }

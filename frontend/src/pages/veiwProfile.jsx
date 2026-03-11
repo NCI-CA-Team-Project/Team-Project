@@ -63,17 +63,17 @@ export default function ViewProfile() {
         <div className="view-profile-right">
 
           <div className="profile-info-card">
-            <h3>interests</h3>
+            <h3>Interests</h3>
             <p>{profile.interests}</p>
           </div>
 
           <div className="profile-info-card">
-            <h3>languages</h3>
+            <h3>Languages</h3>
             <p>{profile.languages}</p>
           </div>
 
           <div className="profile-info-card">
-            <h3>about</h3>
+            <h3>About</h3>
             <p>{profile.about}</p>
           </div>
 
