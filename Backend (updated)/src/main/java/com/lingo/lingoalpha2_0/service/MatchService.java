@@ -30,11 +30,11 @@ public class MatchService {
             boolean alreadyMatched = matchRepository.findMatchBetween(userId1, userId2).isPresent();
 
             if (alreadyMatched) {
-                throw new RuntimeException("Users are already matched");
+                throw new RuntimeException("A request or match already exists between these users");
             }
 
             //create new match entity and save it to match repo
-                Match newMatch = new Match(userId1, userId2);
+                Match newMatch = new Match(userId1, userId2, "PENDING");
                 matchRepository.save(newMatch);
 
 
@@ -48,6 +48,10 @@ public class MatchService {
             List<User> matchedUsers = new ArrayList<>();
             //enhanced for loop to loop through all the matches
             for(Match m: matches){
+                if(!"ACCEPTED".equals(m.getStatus())){
+                    continue;
+                }
+
                 Long otherUserId;
 
                 //to establish which side of the conversation user is on
@@ -65,8 +69,28 @@ public class MatchService {
 
             //add the other user to the list
                   matchedUsers.add(otherUser);
- }
+            }
             return matchedUsers;
+            }
+
+            public List<Match> getPendingRequestMatches(Long currentUserId){
+                return matchRepository.findByUser2IdAndStatus(currentUserId, "PENDING");
+            }  
+
+            public void acceptRequest(Long matchId){
+                Match match = matchRepository.findById(matchId)
+                    .orElseThrow(() -> new RuntimeException("Request not found"));
+
+                match.setStatus("ACCEPTED");
+                matchRepository.save(match);
+            }
+
+            public void declineRequest(Long matchId){
+                Match match = matchRepository.findById(matchId)
+                    .orElseThrow(() -> new RuntimeException("Request not found"));
+
+                match.setStatus("DECLINED");
+                matchRepository.save(match);
+            }
         }
-    }
 

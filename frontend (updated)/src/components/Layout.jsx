@@ -108,11 +108,11 @@ const handleLogout = () => {
           </NavLink>
 
           <NavLink
-            to="/pay"
+            to="/requests"
             className="menu-item"
             onClick={closeMenu}
           >
-            Premium
+            Requests
           </NavLink>
 
         <button className="menu-item logout-btn" onClick={handleLogout}>

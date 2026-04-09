@@ -28,7 +28,7 @@
     </scm>
     <properties>
         <java.version>17</java.version>
-        <start-class>com.lingo.LingoAlpha20Application</start-class>
+        <start-class>com.lingo.lingoalpha2_0.LingoAlpha20Application</start-class>
     </properties>
     <dependencies>
         <dependency>

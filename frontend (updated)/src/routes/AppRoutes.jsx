@@ -32,7 +32,7 @@ export default function AppRoutes() { // sets up routing for landing login regis
         <Route path="/home" element={<Home />} />
         <Route path="/chat/:id" element={<Chat />} />
         <Route path="/messages" element={<Messages />} />
-        <Route path="/pay" element={<Pay />} />
+        <Route path="/requests" element={<Pay />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/viewProfile" element={<ViewProfile />} />

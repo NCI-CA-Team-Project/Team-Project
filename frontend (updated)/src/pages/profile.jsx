@@ -123,14 +123,18 @@ export default function Profile() {
           <div className="my-profile-info-card">
             <h3>Learning Language</h3>
             {isEditing ? (
-              <input
-                type="text"
+              <select
                 value={profile.learningLanguage || ""}
                 onChange={(e) =>
                   setProfile({ ...profile, learningLanguage: e.target.value })
                 }
-                placeholder="Learning language"
-              />
+              >
+                <option value="">Select a language</option>
+                <option value="English">English</option>
+                <option value="German">German</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+              </select>
             ):(
               <p>{profile.learningLanguage || "No language added yet."}</p>
             )}

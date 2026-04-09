@@ -21,11 +21,15 @@ public class Match {
     @Column(nullable = false)
     private LocalDateTime matchedAt;
 
+    @Column(nullable = false)
+    private String status;
+
     public Match() {}
 
-    public Match(Long user1Id, Long user2Id) {
+    public Match(Long user1Id, Long user2Id, String status) {
         this.user1Id = user1Id;
         this.user2Id = user2Id;
+        this.status = status;
         this.matchedAt = LocalDateTime.now();
     }
 
@@ -59,5 +63,13 @@ public class Match {
 
     public void setMatchedAt(LocalDateTime matchedAt) {
         this.matchedAt = matchedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
