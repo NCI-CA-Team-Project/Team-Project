@@ -1,11 +1,21 @@
 /*
+ * TESTING - Vincentas
+ * Black Box: 7 test cases, 100% coverage
+ * White Box: Branch + Statement - 100% coverage
+ * Result: All passed
+ */
+
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.example.web_back_end.controller;
 
-import com.example.web_back_end.service.AuthenticationService;  // import AuthenticationService
-import org.springframework.web.bind.annotation.*;   // import web annotation (@RestController, @PostMapping, etc.)
+import org.springframework.web.bind.annotation.PostMapping;  // import AuthenticationService
+import org.springframework.web.bind.annotation.RequestParam;   // import web annotation (@RestController, @PostMapping, etc.)
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.web_back_end.service.AuthenticationService;
 
 /**
  *
