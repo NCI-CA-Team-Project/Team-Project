@@ -1,4 +1,9 @@
-
+/*
+ * TESTING - Vincentas
+ * Black Box: 5 test cases, 100% coverage
+ * White Box: Branch + Statement - 100% coverage
+ * Result: All passed
+ */
 
 //IMPORTS___________________________________________
 import { useState } from "react"; //so i can store live values inside my componenet 

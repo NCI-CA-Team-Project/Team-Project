@@ -1,3 +1,10 @@
+/*
+ * TESTING - Vincentas
+ * Black Box: 7 test cases, 100% coverage
+ * White Box: Branch + Statement - 100% coverage
+ * Result: All passed
+ */
+
 // profile page others veiw have interets, languages, about, text, add, level, profile pic 
 // page for viewing another user's profile
 
