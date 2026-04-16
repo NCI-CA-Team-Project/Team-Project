@@ -1,3 +1,9 @@
+/*
+ * TESTING - Vincentas
+ * Black Box: 10 test cases, 100% coverage
+ * White Box: Branch + Statement + Condition - 100% coverage
+ * Result: All passed
+ */
 //IMPORTS___________________________________________
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";

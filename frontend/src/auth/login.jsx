@@ -4,7 +4,6 @@
  * White Box: Branch + Statement + Condition - 100% coverage
  * Result: All passed
  */
-
 //IMPORTS___________________________________________
 import { useState } from "react"; //so i can store live values inside my componenet 
 import { useNavigate, Link } from "react-router-dom"; //lets us hardcode in naviagtion like sending user to homepage after login, and link lets us being other components onto the screen the user picks 
