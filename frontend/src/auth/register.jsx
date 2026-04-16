@@ -1,10 +1,3 @@
-/*
- * TESTING - Vincentas
- * Black Box: 9 test cases, 100% coverage
- * White Box: Branch + Statement + Condition - 100% coverage
- * Result: All passed
- */
-
 //IMPORTS___________________________________________
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -29,24 +22,34 @@ export default function Register() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {//runs when user clicks register 
+    //1
     e.preventDefault();//stops refreshing 
+    //2
     setError("");//removes erros 
 
   //HELPER FUNCTIONS AND HANDLERS _____________________________________
+    //3
     if (
       !name.trim() || !surname.trim() || !birthdate || !email.trim() || !username.trim() || !password || !confirmPassword
     ) {
+      //4
       setError("You havent filled out all of the fields");
+      //5
       return; //checks everything is filled out 
     }
 
+    //6
     if (password !== confirmPassword) {
+      //7
       setError("your passwords do not match, please try again");
+      //8
       return;
     }
 
+    //9
     setLoading(true); // diables button while we wait for backend response
 
+    //10
     const ok = await register({ //calls backend and gives user inputs then waits for response 
       name: name.trim(),
       surname: surname.trim(),
@@ -56,10 +59,11 @@ export default function Register() {
       password,
       confirmPassword,
     });
-
+    //11, 12
     if (ok) navigate("/"); //if registration is valid they are sent to home will change this to send to login as i think that how most sites work 
+    //13
     else setError("Register is not available yet (backend missing).");
-
+    //14
     setLoading(false);// activate button again 
   };
 

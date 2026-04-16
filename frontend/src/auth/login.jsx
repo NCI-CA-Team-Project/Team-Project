@@ -1,7 +1,7 @@
 /*
  * TESTING - Vincentas
- * Black Box: 5 test cases, 100% coverage
- * White Box: Branch + Statement - 100% coverage
+ * Black Box: 7 test cases, 100% coverage
+ * White Box: Branch + Statement + Condition - 100% coverage
  * Result: All passed
  */
 
@@ -25,22 +25,27 @@ export default function Login() { //this function runs the login page logic and 
 
 
 //HELPER FUNCTIONS AND HANDLERS _____________________________________
-  const handleSubmit = async (e) => { // this runs when user clicks login 
+  const handleSubmit = async (e) => { // this runs when user clicks login
+    //1 
     e.preventDefault();//stops refreshing when forms submitted which is important because react app is a spa so we dont want to refresh the page and lose all our state and stuff
+    //2
     setError(""); //clears old error messages 
-
+    //3
     if (!id.trim() || !password) {//clears whitspace and checks user entered all fields 
+      //4
       setError("Please enter your id and password");
+      //5
       return;
     }
-
+    //6
     setLoading(true); // disables button and changes text to logging in 
-
+    //7
     const ok = await login(id.trim(), password);//  calls backend and waits for response 
-
+    //8, 9
     if (ok) navigate("/home");//sucess = they go home page 
+    //10
     else setError("Login failed.");
-
+    //11
     setLoading(false); //stop loading state so button  is active again
   };
 
