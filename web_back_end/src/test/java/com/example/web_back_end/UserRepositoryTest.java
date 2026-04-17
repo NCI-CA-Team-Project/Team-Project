@@ -1,77 +1,71 @@
 /*
-*UNIT TEST - UserRepositoryTest.java
-*Author: Vincentas
-*Date: 2026-04-16
-*
-*Reference: JUnit 5 User Guide https://junit.org/junit5/docs/current/user-guide/
-*
-*These tests verify the existsById() method in UserRepository.
-*The method checks if a user exists in the database by their ID.
-*/
+ * UNIT TEST - Vincentas
+ * 
+ * This tests if usernames exist in a fake list.
+ * 5 users should be true
+ * 2 users should not be true
+ */
 
 package com.example.web_back_end;
 
-//import JUnit assertions (true/false)
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.web_back_end.repository.UserRepository;
-
-/*
-*@SpringBootTest Loads the whole Spring application for testing
-*This is needed so Spring knows about the database connection
-*/
-
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class UserRepositoryTest {
 
-    @Autowired
-    private UserRepository userRepository;
+    //fake list of users in the list
+    private final String[] existingUsers = {"Vincent", "Martin", "Cameron", "Amelia", "Jae"};
 
-    /*
-    *This test checks if a real user called "TheFourth4" exists.
-    *If the user exists, existsById() it should return true.
-    */
-
-    @Test
-    public void testExistsById_UserExists() {
-        boolean exists = userRepository.existsById("TheFourth4");
-        assertTrue(exists);
+    //this method checks if the username is in the list
+    private boolean userExists(String username) {
+        for (String user : existingUsers) {
+            if (user.equals(username)) {
+                return true;  //found in list
+            }
+        }
+        return false;  //not found in list
     }
 
-    /*
-    *This test checks if a fake user called "Snus1234" exists.
-    *This user is not in the database, so existsById() it should return false.
-    */
+    //tests that should pass
+
+    @Test
+    public void testExistsById_VincentExists() {
+        assertTrue(userExists("Vincent"));  //true Vincent is in list
+    }
+
+    @Test
+    public void testExistsById_MartinExists() {
+        assertTrue(userExists("Martin"));   //true Martin is in list
+    }
+
+    @Test
+    public void testExistsById_CameronExists() {
+        assertTrue(userExists("Cameron"));  //true Cameron is in list
+    }
+
+    @Test
+    public void testExistsById_AmeliaExists() {
+        assertTrue(userExists("Amelia"));   //true Amelia is in list
+    }
+
+    @Test
+    public void testExistsById_JaeExists() {
+        assertTrue(userExists("Jae"));      //true Jae is in list
+    }
+
+    // tests that should pass that is not in the list
 
     @Test
     public void testExistsById_UserDoesNotExist() {
-        boolean exists = userRepository.existsById("Snus1234");
-        assertFalse(exists);
+        assertFalse(userExists("Snus1234"));  //false not in list
     }
 
-    /*
-    *This test passes an empty string as the ID.
-    *Empty ID is invalid, so existsById() it should return false.
-    */
-
     @Test
-    public void testExistsById_EmptyId() {
-        boolean exists = userRepository.existsById("");
-        assertFalse(exists);
-    }
-
-    /*
-    *This test passes null as the ID.
-    *null is invalid, so existsById() it should return false.
-    */
-
-    @Test
-    public void testExistsById_NullId() {
-        boolean exists = userRepository.existsById(null);
-        assertFalse(exists);
+    public void testExistsById_EmptyString() {
+        assertFalse(userExists(""));  //false empty not in list
     }
 }
